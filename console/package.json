@@ -65,9 +65,7 @@
         "fleetbase-extensions-indexer": "^0.0.5",
         "postcss-at-rules-variables": "^0.3.0",
         "postcss-custom-properties": "^12.1.11",
-        "postcss-nth-list": "^1.0.2",
-        "@fleetbase/pallet-engine": "^0.0.2",
-        "@fleetbase/alrashed-transport-engine": "^0.0.6"
+        "postcss-nth-list": "^1.0.2"
     },
     "devDependencies": {
         "@babel/core": "^7.25.2",
