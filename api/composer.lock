@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c821d49482de4aade1c4ccea9e6350f6",
+    "content-hash": "ebe4fe577b90bcab7df30ca3a70e3c9e",
     "packages": [
         {
             "name": "appstract/laravel-opcache",
@@ -124,16 +124,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.387.0",
+            "version": "3.387.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "38422b3eaed583a6056cef6d40e5594cd90cc895"
+                "reference": "2e1a16e9c87f2a069aa8a0a14a314dd148de21e1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/38422b3eaed583a6056cef6d40e5594cd90cc895",
-                "reference": "38422b3eaed583a6056cef6d40e5594cd90cc895",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/2e1a16e9c87f2a069aa8a0a14a314dd148de21e1",
+                "reference": "2e1a16e9c87f2a069aa8a0a14a314dd148de21e1",
                 "shasum": ""
             },
             "require": {
@@ -215,9 +215,9 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.387.0"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.387.1"
             },
-            "time": "2026-06-30T18:31:55+00:00"
+            "time": "2026-07-01T18:10:42+00:00"
         },
         {
             "name": "aws/aws-sdk-php-laravel",
@@ -2155,16 +2155,16 @@
         },
         {
             "name": "fleetbase/ai",
-            "version": "0.0.1",
+            "version": "0.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fleetbase/ai.git",
-                "reference": "c3f7acd7dd808e06c3ea423e4a50548fc3d5463b"
+                "reference": "9be5bc31cec79d965e6586da9f3385b7bfa4a89e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fleetbase/ai/zipball/c3f7acd7dd808e06c3ea423e4a50548fc3d5463b",
-                "reference": "c3f7acd7dd808e06c3ea423e4a50548fc3d5463b",
+                "url": "https://api.github.com/repos/fleetbase/ai/zipball/9be5bc31cec79d965e6586da9f3385b7bfa4a89e",
+                "reference": "9be5bc31cec79d965e6586da9f3385b7bfa4a89e",
                 "shasum": ""
             },
             "require": {
@@ -2215,9 +2215,9 @@
             ],
             "support": {
                 "issues": "https://github.com/fleetbase/ai/issues",
-                "source": "https://github.com/fleetbase/ai/tree/v0.0.1"
+                "source": "https://github.com/fleetbase/ai/tree/v0.0.2"
             },
-            "time": "2026-07-01T07:53:24+00:00"
+            "time": "2026-07-02T06:59:41+00:00"
         },
         {
             "name": "fleetbase/core-api",
