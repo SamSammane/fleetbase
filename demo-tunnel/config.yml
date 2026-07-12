@@ -1,0 +1,8 @@
+tunnel: e58190e6-59f9-48a0-a2af-d979d73374b0
+credentials-file: /etc/cloudflared/credentials.json
+protocol: http2
+
+ingress:
+  - hostname: fleet-demo.qgi.dev
+    service: http://demo:80
+  - service: http_status:404

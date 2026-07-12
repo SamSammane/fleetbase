@@ -1,0 +1,64 @@
+{
+    "name": "ifs/commandiq-api",
+    "version": "0.1.0",
+    "description": "IFS CommandIQ API extension for Fleetbase — availability forecasting, scheduling, QC, campaigns, warranty claims, RMA",
+    "keywords": [
+        "fleetbase-extension",
+        "commandiq",
+        "maintenance",
+        "forecasting",
+        "fleet-service"
+    ],
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Integrated Fleet Solutions (IFS)",
+            "email": "sam@qgi.dev"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "fleetbase/core-api": "*",
+        "fleetbase/fleetops-api": "*"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.34.1",
+        "pestphp/pest": "^2.33.2",
+        "phpstan/phpstan": "^1.10.38"
+    },
+    "autoload": {
+        "psr-4": {
+            "IFS\\CommandIQ\\": "server/src/",
+            "IFS\\CommandIQ\\Seeders\\": "server/seeders/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "extra": {
+        "laravel": {
+            "providers": [
+                "IFS\\CommandIQ\\Providers\\CommandIQServiceProvider"
+            ]
+        },
+        "ifs/commandiq-api": {
+            "excludes": [
+                "addon",
+                "app",
+                "assets",
+                "tests",
+                "vendor"
+            ]
+        }
+    },
+    "config": {
+        "vendor-dir": "./server_vendor",
+        "sort-packages": true,
+        "preferred-install": "dist"
+    },
+    "scripts": {
+        "lint": "php-cs-fixer fix -v",
+        "test:lint": "php-cs-fixer fix -v --dry-run",
+        "test:types": "phpstan analyse --ansi --memory-limit=4G",
+        "test:unit": "pest --colors=always"
+    }
+}

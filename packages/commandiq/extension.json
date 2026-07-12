@@ -1,0 +1,10 @@
+{
+    "name": "CommandIQ",
+    "version": "0.1.0",
+    "description": "IFS CommandIQ — segment-aware availability forecasting, maintenance scheduling, QC, campaigns, warranty claims, and RMA for Fleetbase",
+    "repository": "https://github.com/ifs/commandiq",
+    "license": "proprietary",
+    "author": "Integrated Fleet Solutions (IFS)",
+    "engine": "package.json",
+    "api": "composer.json"
+}

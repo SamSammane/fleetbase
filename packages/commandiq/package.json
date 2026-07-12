@@ -1,0 +1,51 @@
+{
+    "name": "@ifs/commandiq-engine",
+    "version": "0.1.0",
+    "description": "IFS CommandIQ console engine for Fleetbase — forecast board, scheduler, campaigns, QC, warranty claims, RMA",
+    "fleetbase": {
+        "route": "commandiq"
+    },
+    "keywords": [
+        "fleetbase-extension",
+        "commandiq",
+        "fleetbase",
+        "ember-addon",
+        "ember-engine"
+    ],
+    "license": "proprietary",
+    "author": "Integrated Fleet Solutions (IFS) <sam@qgi.dev>",
+    "directories": {
+        "app": "app",
+        "addon": "addon",
+        "tests": "tests"
+    },
+    "scripts": {
+        "build": "ember build --environment=production",
+        "lint:js": "eslint . --cache",
+        "lint:hbs": "ember-template-lint .",
+        "start": "ember serve",
+        "test:ember": "ember test"
+    },
+    "dependencies": {
+        "@fleetbase/ember-core": "^0.3.24",
+        "@fleetbase/ember-ui": "^0.3.39",
+        "@fleetbase/fleetops-data": "^0.1.40",
+        "ember-auto-import": "^2.7.0",
+        "ember-cli-babel": "^8.2.0",
+        "ember-cli-htmlbars": "^6.3.0",
+        "ember-concurrency": "^4.0.2",
+        "ember-engines": "^0.11.0"
+    },
+    "devDependencies": {
+        "ember-source": "~5.4.0"
+    },
+    "engines": {
+        "node": ">= 18"
+    },
+    "ember": {
+        "edition": "octane"
+    },
+    "ember-addon": {
+        "configPath": "tests/dummy/config"
+    }
+}
