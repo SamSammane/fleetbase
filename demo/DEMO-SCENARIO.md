@@ -47,13 +47,14 @@ Demo admin: `sam@qgi.dev` (password shared separately — do not write it into t
 
 The seeded dataset tells one coherent story — every screen below reinforces it:
 
-- **6 LM vans** (Ford Transit / Ram ProMaster) operated by DSPs **RRLG / BLZE / SWFT**
-  out of **DAL3 (Dallas)** and **DAU5 (Austin)** delivery stations
-- **2 MM trailers** touching **FTW1 (Fort Worth)** and **SAT2 (San Antonio)** hubs
-- **6 work orders** spanning the full lifecycle, including two retrofit campaigns
+- **24 LM vans** (Ford Transit / Ram ProMaster / Sprinter) operated by DSPs **RRLG /
+  BLZE / SWFT / NOVA** out of **DAL3 (Dallas)**, **DAU5 (Austin)**, and **DHOU2 (Houston)**
+- **6 MM trailers** touching **FTW1 (Fort Worth)**, **SAT2 (San Antonio)**, and **ELP1 (El Paso)** hubs
+- **20 work orders** spanning the full lifecycle, including two retrofit campaigns
   (TELEM-24 telematics install, CONSP-26 conspicuity tape)
 - Serialized **Netradyne cameras / Geotab GO9** devices, PM schedules, parts inventory
-  with a live reorder flag, and active warranties
+  with a live reorder flag, active warranties, **26 drivers**, and a month of
+  completed deliveries with revenue, invoices, and active dispatches on the live map
 
 ---
 
@@ -79,7 +80,7 @@ The seeded dataset tells one coherent story — every screen below reinforces it
 
 ## Act 3 — The fleet, VIN by VIN (5 min)
 
-1. **Fleet-Ops → Resources → Vehicles** — the 8-asset registry.
+1. **Fleet-Ops → Resources → Vehicles** — the 30-asset registry.
    - **Say:** "Every asset is segmented Last-Mile or Middle-Mile, with its DSP and home
      station — the segmentation drives how we'll forecast availability." (FR-1, FR-17)
 2. Click **LM Van 101** → the detail panel.
@@ -95,7 +96,7 @@ The seeded dataset tells one coherent story — every screen below reinforces it
 
 ## Act 4 — Maintenance operations (8 min)
 
-1. **Maintenance → Work Orders** — the six-order board.
+1. **Maintenance → Work Orders** — the work-order board (20 orders).
    - Walk the statuses left to right: submitted → scheduled → in progress → repaired →
      approved → closed. Note the categories: corrective, preventive, device replacement,
      and the two **campaigns**.
