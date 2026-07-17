@@ -17,6 +17,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { z } from 'zod';
 import mysql from 'mysql2/promise';
 import fs from 'node:fs';
+import { METRICS } from './catalog.mjs';
 
 const DB = {
     host: '127.0.0.1',
@@ -68,6 +69,52 @@ function validateSql(sql) {
 }
 
 const server = new McpServer({ name: 'fleet-tools', version: '1.0.0' });
+
+
+async function runCanned(sqlTemplate, params) {
+    let sql = sqlTemplate.replaceAll(':company', mysql.escape(COMPANY));
+    if (params.days !== undefined) sql = sql.replaceAll(':days', String(Math.max(1, Math.min(365, parseInt(params.days, 10) || 30))));
+    if (params.vehicle !== undefined) sql = sql.replaceAll(':vehicle', mysql.escape('%' + params.vehicle + '%'));
+    const conn = await pool.getConnection();
+    try {
+        await conn.query('SET SESSION MAX_EXECUTION_TIME=3000');
+        const [rows] = await conn.query(sql);
+        return rows;
+    } finally {
+        conn.release();
+    }
+}
+
+server.tool(
+    'fleet_insights',
+    'Preferred tool for fleet questions. Runs one or more canned, deterministic metrics IN PARALLEL and returns them keyed by name. '
+    + 'Metrics: ' + Object.keys(METRICS).join(', ') + '. '
+    + 'Pass every metric the question needs in ONE call. params: {days} for *_window metrics, {vehicle} for vehicle_profile.',
+    {
+        metrics: z.array(z.string()).min(1).max(8).describe('Metric names from the catalog'),
+        params: z.object({ days: z.number().optional(), vehicle: z.string().optional() }).optional(),
+    },
+    async ({ metrics, params = {} }) => {
+        const out = {};
+        await Promise.all(metrics.map(async (name) => {
+            const def = METRICS[name];
+            if (!def) { out[name] = { error: 'unknown metric' }; return; }
+            try {
+                if (def.multi) {
+                    const sub = {};
+                    await Promise.all(Object.entries(def.multi).map(async ([k, tmpl]) => { sub[k] = await runCanned(tmpl, params); }));
+                    out[name] = sub;
+                } else {
+                    out[name] = await runCanned(def.sql, params);
+                }
+            } catch (e) {
+                out[name] = { error: e.message };
+            }
+        }));
+        const text = JSON.stringify(out, (k, v) => (typeof v === 'bigint' ? v.toString() : v));
+        return { content: [{ type: 'text', text: text.length > 30000 ? text.slice(0, 30000) + '...(truncated)' : text }] };
+    }
+);
 
 server.tool(
     'fleet_schema',
