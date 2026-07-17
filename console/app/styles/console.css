@@ -299,3 +299,35 @@ body[data-theme='light'] .fleetbase-ai-overlay {
         opacity: 1;
     }
 }
+
+/* AI docked panel — fresh/new-chat "spotlight" state */
+.fleetbase-ai-overlay .fleetbase-ai-dropzone {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 14px;
+}
+
+.fleetbase-ai-overlay .fleetbase-ai-dropzone:not(:has(.fleetbase-ai-response-stack))::before {
+    content: 'CBRE Fleet AI\A\A Ask about vehicles, work orders, maintenance, parts, or drivers.\A Answers come from live fleet data.';
+    white-space: pre-line;
+    text-align: center;
+    color: rgba(148, 163, 158, 0.8);
+    font-size: 14px;
+    line-height: 1.65;
+    margin: auto 14px;
+    display: block;
+}
+
+.fleetbase-ai-overlay .fleetbase-ai-spotlight {
+    background: rgba(31, 41, 55, 0.96) !important;
+    border: 1px solid rgba(99, 110, 125, 0.55) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+body[data-theme='light'] .fleetbase-ai-overlay .fleetbase-ai-spotlight {
+    background: rgba(255, 255, 255, 0.98) !important;
+    border: 1px solid rgba(180, 190, 200, 0.8) !important;
+}
