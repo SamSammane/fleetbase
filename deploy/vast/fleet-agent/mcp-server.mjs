@@ -121,11 +121,41 @@ const PRODUCT_DOCS = fs.existsSync('/opt/fleet-agent/product-docs.md')
     ? fs.readFileSync('/opt/fleet-agent/product-docs.md', 'utf-8')
     : 'Product documentation not installed.';
 
+const PLATFORM_DOCS = fs.existsSync('/opt/fleet-agent/platform-docs.md')
+    ? fs.readFileSync('/opt/fleet-agent/platform-docs.md', 'utf-8')
+    : '';
+
+const PLATFORM_SECTIONS = PLATFORM_DOCS
+    ? PLATFORM_DOCS.split(/<!-- SECTION: /).slice(1).map((chunk) => {
+        const title = chunk.slice(0, chunk.indexOf(' -->'));
+        return { title, body: chunk.slice(chunk.indexOf(' -->') + 4).trim() };
+    })
+    : [];
+
 server.tool(
     'product_docs',
-    'The official IFS CommandIQ product documentation: signing in, console navigation, work orders and their lifecycle, PM schedules, parts, the AI assistant, roles and permissions, FAQ. Use this for ANY how-to or product-usage question. Never web-search for product questions.',
-    {},
-    async () => ({ content: [{ type: 'text', text: PRODUCT_DOCS }] })
+    'Official CBRE Fleet / IFS CommandIQ documentation. Use for ANY how-to or product-usage question; never web-search product questions. '
+    + 'Without a topic: returns the IFS CommandIQ guide plus a table of contents of platform topics. '
+    + 'With a topic keyword (e.g. "orders", "drivers", "dispatch", "kanban", "geofence", "fuel", "vendors", "import"): returns the matching platform guides.',
+    { topic: z.string().optional().describe('Keyword to select platform guide sections') },
+    async ({ topic }) => {
+        if (!topic) {
+            const toc = PLATFORM_SECTIONS.map((s) => '- ' + s.title).join('\n');
+            const text = PRODUCT_DOCS + '\n\n# Platform guide topics (pass as topic param for details)\n' + toc;
+            return { content: [{ type: 'text', text }] };
+        }
+        const q = topic.toLowerCase();
+        let hits = PLATFORM_SECTIONS.filter((s) => s.title.toLowerCase().includes(q));
+        if (!hits.length) {
+            hits = PLATFORM_SECTIONS.filter((s) => s.body.toLowerCase().includes(q));
+        }
+        if (!hits.length) {
+            return { content: [{ type: 'text', text: 'No platform guide matched "' + topic + '". Topics:\n' + PLATFORM_SECTIONS.map((s) => '- ' + s.title).join('\n') }] };
+        }
+        let text = hits.map((s) => '# ' + s.title + '\n\n' + s.body).join('\n\n---\n\n');
+        if (text.length > 22000) text = text.slice(0, 22000) + '\n...(truncated - narrow the topic)';
+        return { content: [{ type: 'text', text }] };
+    }
 );
 
 server.tool(
