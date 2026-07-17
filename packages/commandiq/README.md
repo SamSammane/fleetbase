@@ -73,3 +73,14 @@ major-hub set, QC closer role, integration credentials via env vars: `RELAY_GARA
 
 Per AC-1/AC-3: integrations use sanctioned APIs with approved authentication only — no
 user portal credentials are stored.
+
+## Known issue — console engine rendering
+
+The engine builds, installs, and loads on the cloud deployment (lazy bundle fetched,
+routes hoisted, mount generated, `setupExtension` bundle registered in the asset
+manifest via `deploy/vast/patch-manifest.py`) — but its route templates render blank
+and direct navigation to `/commandiq` stalls the boot loader. No runtime errors are
+thrown. Suspected interplay between the console's custom extension loader and
+non-@fleetbase-scoped lazy engines. The API side (models, migrations, endpoints,
+seeded data) is fully functional. Track this against the console's
+`load-extensions` initializer before the v1 forecast board work.

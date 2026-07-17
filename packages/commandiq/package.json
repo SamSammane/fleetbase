@@ -1,6 +1,6 @@
 {
     "name": "@ifs/commandiq-engine",
-    "version": "0.1.0",
+    "version": "0.2.1",
     "description": "IFS CommandIQ console engine for Fleetbase — forecast board, scheduler, campaigns, QC, warranty claims, RMA",
     "fleetbase": {
         "route": "commandiq"

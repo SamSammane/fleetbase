@@ -243,3 +243,59 @@ body[data-theme='dark'] .console-dashboard-title h1 {
         padding: 1rem;
     }
 }
+
+/* ─── AI assistant as a docked, collapsible right-side panel ─────────────
+   The AI engine ships a centered modal + backdrop; these overrides dock it
+   into the main layout as a drawer. The click-to-close on the overlay is
+   removed at build time so clicks inside the panel don't dismiss it. */
+.fleetbase-ai-backdrop {
+    display: none !important;
+}
+
+.fleetbase-ai-overlay {
+    position: fixed !important;
+    top: 56px !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: auto !important;
+    width: 440px !important;
+    max-width: 94vw !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: stretch !important;
+    justify-content: stretch !important;
+    background: rgba(17, 24, 39, 0.98) !important;
+    border-left: 1px solid rgba(75, 85, 99, 0.45) !important;
+    box-shadow: -10px 0 28px rgba(0, 0, 0, 0.35) !important;
+    animation: cq-ai-slide-in 0.16s ease-out;
+    z-index: 60 !important;
+}
+
+body[data-theme='light'] .fleetbase-ai-overlay {
+    background: rgba(249, 250, 251, 0.99) !important;
+    border-left: 1px solid rgba(203, 213, 225, 0.9) !important;
+}
+
+.fleetbase-ai-overlay .fleetbase-ai-shell {
+    width: 100% !important;
+    max-width: none !important;
+    height: 100% !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes cq-ai-slide-in {
+    from {
+        transform: translateX(30px);
+        opacity: 0.4;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}

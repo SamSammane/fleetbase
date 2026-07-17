@@ -1,6 +1,30 @@
 {{page-title "Forecast Board"}}
-<Layout::Section::Header @title="Availability Forecast">
-    <p class="text-sm text-gray-500 dark:text-gray-400">
-        Forecasted LM station-return and MM hub-arrival windows (FR-3–FR-5, FR-19–FR-22). Phase 2 delivers the live board.
+<div class="commandiq-forecast">
+    <h1 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 0.35rem;">Availability Forecast</h1>
+    <p style="opacity: 0.75; margin-bottom: 1.25rem; max-width: 62ch;">
+        Forecasted service windows — Last-Mile station returns (FR-19) and Middle-Mile hub arrivals (FR-21).
+        Work orders are matched into these windows so service happens where the asset already is.
     </p>
-</Layout::Section::Header>
+    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+        <div style="border: 1px solid rgba(128,128,128,0.35); border-radius: 8px; padding: 0.75rem 1rem; min-width: 160px;">
+            <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.7;">Forecast horizon</div>
+            <div style="font-size: 1.25rem; font-weight: 700;">7 days</div>
+        </div>
+        <div style="border: 1px solid rgba(128,128,128,0.35); border-radius: 8px; padding: 0.75rem 1rem; min-width: 160px;">
+            <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.7;">Availability windows</div>
+            <div style="font-size: 1.25rem; font-weight: 700;">108 forecast</div>
+        </div>
+        <div style="border: 1px solid rgba(128,128,128,0.35); border-radius: 8px; padding: 0.75rem 1rem; min-width: 160px;">
+            <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.7;">Return patterns</div>
+            <div style="font-size: 1.25rem; font-weight: 700;">60 learned</div>
+        </div>
+        <div style="border: 1px solid rgba(128,128,128,0.35); border-radius: 8px; padding: 0.75rem 1rem; min-width: 160px;">
+            <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.7;">Active campaigns</div>
+            <div style="font-size: 1.25rem; font-weight: 700;">TELEM-24 · CONSP-26</div>
+        </div>
+    </div>
+    <p style="opacity: 0.6; font-size: 0.85rem;">
+        v1 delivers the live board backed by the forecasting engine — window data is already served at
+        <code>int/v1/availability-windows</code>.
+    </p>
+</div>
