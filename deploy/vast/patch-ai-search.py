@@ -28,10 +28,14 @@ WORK_ORDERS = '''protected function workOrders(array $terms): array
         $phrase = trim(implode(' ', $terms));
         $query  = WorkOrder::with('target')->where('company_uuid', session('company'));
         $query->where(function ($q) use ($terms, $phrase) {
+            foreach (['public_id', 'uuid', 'code', 'subject', 'status', 'priority'] as $col) {
+                foreach ($terms as $t) {
+                    $q->orWhere($col, 'like', '%' . $t . '%');
+                }
+            }
             if ($phrase !== '') {
                 $q->orWhere('subject', 'like', '%' . $phrase . '%');
             }
-            $this->whereLikeAny($q, ['public_id', 'uuid', 'code', 'subject', 'status', 'priority'], $terms);
         });
 
         return $query->limit(8)->get()->map(function ($wo) {
@@ -58,12 +62,14 @@ VEHICLES = '''protected function vehicles(array $terms): array
         $phrase = trim(implode(' ', $terms));
         $query  = Vehicle::where('company_uuid', session('company'));
         $query->where(function ($q) use ($terms, $phrase) {
-            if ($phrase !== '') {
-                $q->orWhere('name', 'like', '%' . $phrase . '%')
-                  ->orWhere('vin', 'like', '%' . $phrase . '%')
-                  ->orWhere('plate_number', 'like', '%' . $phrase . '%');
+            foreach (['name', 'make', 'model', 'plate_number', 'vin', 'public_id', 'internal_id'] as $col) {
+                foreach ($terms as $t) {
+                    $q->orWhere($col, 'like', '%' . $t . '%');
+                }
             }
-            $this->whereLikeAny($q, ['name', 'make', 'model', 'plate_number', 'vin', 'public_id', 'internal_id'], $terms);
+            if ($phrase !== '') {
+                $q->orWhere('name', 'like', '%' . $phrase . '%');
+            }
         });
 
         $matches = $query->limit(5)->get();
@@ -132,8 +138,7 @@ def replace_method(source, name, new_body):
         return source
     return pattern.sub(lambda m: new_body, source, count=1)
 
-if "'vehicle'  => $wo->target" not in src:
-    src = replace_method(src, 'workOrders', WORK_ORDERS)
+src = replace_method(src, 'workOrders', WORK_ORDERS)
 src = replace_method(src, 'vehicles', VEHICLES)
 src = src.replace("'status' => $record->status ?? null,", "'status' => $record->status ?? null,\n                'priority' => $record->priority ?? null,")
 open(CAP, 'w', encoding='utf-8').write(src)
