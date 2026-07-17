@@ -79,12 +79,27 @@ id fleetai >/dev/null 2>&1 || useradd -r -s /usr/sbin/nologin -d /opt/fleet-agen
 chown -R fleetai:fleetai /opt/fleet-agent
 
 # ─── Supervisor program ──────────────────────────────────────────
-cat > /etc/supervisor/conf.d/fleet-agent.conf <<SUP
+# Secrets live in /opt/fleet-agent/.env (mode 600, service user only) —
+# injected from the deployer's environment at deploy time, never in configs.
+cat > /opt/fleet-agent/.env <<ENV
+CURSOR_API_KEY=${CURSOR_API_KEY}
+FIRECRAWL_API_KEY=${FIRECRAWL_API_KEY}
+FLEET_SQL_USER=ai_ro
+FLEET_SQL_PASSWORD=${SQL_PASS}
+FLEET_COMPANY_UUID=${COMPANY_UUID}
+AGENT_WORKSPACE=/opt/fleet-agent/workspace
+CURSOR_MODEL=composer-2.5
+CURSOR_MODEL_FAST=true
+HOME=/opt/fleet-agent
+ENV
+chmod 600 /opt/fleet-agent/.env
+chown fleetai:fleetai /opt/fleet-agent/.env
+
+cat > /etc/supervisor/conf.d/fleet-agent.conf <<'SUP'
 [program:fleet-agent]
-command=/usr/bin/node /opt/fleet-agent/bridge.mjs
+command=/usr/bin/node --env-file=/opt/fleet-agent/.env /opt/fleet-agent/bridge.mjs
 directory=/opt/fleet-agent
 user=fleetai
-environment=CURSOR_API_KEY="${CURSOR_API_KEY}",FIRECRAWL_API_KEY="${FIRECRAWL_API_KEY}",FLEET_SQL_USER="ai_ro",FLEET_SQL_PASSWORD="${SQL_PASS}",FLEET_COMPANY_UUID="${COMPANY_UUID}",AGENT_WORKSPACE="/opt/fleet-agent/workspace",CURSOR_MODEL="composer-2.5",CURSOR_MODEL_FAST="true",HOME="/opt/fleet-agent"
 autostart=true
 autorestart=true
 stdout_logfile=/var/log/fleet-agent.log
