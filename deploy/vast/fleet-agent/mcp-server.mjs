@@ -45,8 +45,11 @@ const SCHEMA_CARD = fs.existsSync('/opt/fleet-agent/schema-card.md')
 
 function validateSql(sql) {
     const s = sql.trim().replace(/;+\s*$/, '');
-    if (!/^select\s/i.test(s)) {
-        throw new Error('Only SELECT statements are allowed.');
+    if (!/^(select|with)\s/i.test(s)) {
+        throw new Error('Only SELECT statements (optionally with CTEs) are allowed.');
+    }
+    if (/(insert|update|delete|drop|alter|create|replace|grant|revoke|truncate|call|set|lock)/i.test(s)) {
+        throw new Error('Only read-only queries are allowed.');
     }
     if (/;/.test(s)) {
         throw new Error('Only a single statement is allowed.');

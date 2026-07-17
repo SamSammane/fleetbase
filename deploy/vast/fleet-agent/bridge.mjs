@@ -33,12 +33,17 @@ const MCP_SERVERS = {
     },
 };
 
+import fs from 'node:fs';
+const SCHEMA_CARD = (() => {
+    try { return fs.readFileSync('/opt/fleet-agent/schema-card.md', 'utf-8'); } catch { return ''; }
+})();
+
 const TOOL_POLICY = [
-    'Tool policy: use the fleet MCP tools (fleet_schema, fleet_sql, web_search, web_fetch) for data.',
-    'Call fleet_schema before your first fleet_sql in a task.',
+    'Tool policy: use the fleet MCP tools (fleet_sql, web_search, web_fetch) for data.',
+    'The full database schema is provided below — write SQL directly from it; only call fleet_schema if something seems missing.',
     'Never use shell, file editing, or file writing tools.',
-    'Prefer one well-formed SQL query over many; aggregate in SQL.',
-].join(' ');
+    'Prefer one well-formed SQL query over many; aggregate in SQL. Answer immediately after the data returns.',
+].join(' ') + '\n\n' + SCHEMA_CARD;
 
 function extractText(event, acc) {
     // Defensive extraction across SDKMessage shapes: collect assistant text deltas
@@ -57,13 +62,38 @@ function extractText(event, acc) {
     } catch { /* ignore malformed events */ }
 }
 
-async function runAgent(input, maxTokens) {
-    const agent = await Agent.create({
+const POOL_SIZE = Number(process.env.AGENT_POOL_SIZE || 2);
+const warmPool = [];
+
+function makeAgent() {
+    return Agent.create({
         apiKey: process.env.CURSOR_API_KEY,
         model: { id: MODEL_ID, params: FAST ? [{ id: 'fast', value: 'true' }] : undefined },
         local: { cwd: WORKSPACE },
         mcpServers: MCP_SERVERS,
     });
+}
+
+function replenishPool() {
+    while (warmPool.length < POOL_SIZE) {
+        const slot = makeAgent()
+            .then((a) => { const i = warmPool.indexOf(slot); if (i >= 0) warmPool[i] = a; return a; })
+            .catch((e) => { const i = warmPool.indexOf(slot); if (i >= 0) warmPool.splice(i, 1); console.error('prewarm failed:', e.message); });
+        warmPool.push(slot);
+    }
+}
+
+async function acquireAgent() {
+    const candidate = warmPool.shift();
+    replenishPool();
+    if (candidate) {
+        try { return await candidate; } catch { /* fall through */ }
+    }
+    return makeAgent();
+}
+
+async function runAgent(input, maxTokens) {
+    const agent = await acquireAgent();
     try {
         const run = await agent.send(TOOL_POLICY + '\n\n' + input);
         const acc = { full: '', delta: '' };
@@ -116,4 +146,5 @@ const serverHttp = http.createServer(async (req, res) => {
     });
 });
 
-serverHttp.listen(PORT, '127.0.0.1', () => console.log(`fleet-agent bridge on 127.0.0.1:${PORT} model=${MODEL_ID} fast=${FAST}`));
+replenishPool();
+serverHttp.listen(PORT, '127.0.0.1', () => console.log(`fleet-agent bridge on 127.0.0.1:${PORT} model=${MODEL_ID} fast=${FAST} pool=${POOL_SIZE}`));
