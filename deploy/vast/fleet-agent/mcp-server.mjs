@@ -116,6 +116,18 @@ server.tool(
     }
 );
 
+
+const PRODUCT_DOCS = fs.existsSync('/opt/fleet-agent/product-docs.md')
+    ? fs.readFileSync('/opt/fleet-agent/product-docs.md', 'utf-8')
+    : 'Product documentation not installed.';
+
+server.tool(
+    'product_docs',
+    'The official IFS CommandIQ product documentation: signing in, console navigation, work orders and their lifecycle, PM schedules, parts, the AI assistant, roles and permissions, FAQ. Use this for ANY how-to or product-usage question. Never web-search for product questions.',
+    {},
+    async () => ({ content: [{ type: 'text', text: PRODUCT_DOCS }] })
+);
+
 server.tool(
     'fleet_schema',
     'Returns the queryable fleet database schema (tables, key columns, conventions). Call this before writing SQL.',

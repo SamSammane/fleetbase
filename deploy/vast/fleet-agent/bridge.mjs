@@ -42,6 +42,7 @@ const SCHEMA_CARD = (() => {
 const TOOL_POLICY = [
     'Tool policy: PREFER fleet_insights — one call with ALL needed metrics; it runs them in parallel with canonical definitions. Use fleet_sql only for questions the catalog does not cover; use web_search/web_fetch for external facts.',
     'The full database schema is provided below — write SQL directly from it; only call fleet_schema if something seems missing.',
+    'For how-to or product-usage questions about IFS CommandIQ (console screens, features, roles), call product_docs and answer from it - never web_search product questions.',
     'Never use shell, file editing, or file writing tools.',
     'Prefer one well-formed SQL query over many; aggregate in SQL. Answer immediately after the data returns.',
 ].join(' ') + '\n\n' + catalogPromptBlock() + String.fromCharCode(10, 10) + SCHEMA_CARD;
