@@ -132,6 +132,34 @@ const PLATFORM_SECTIONS = PLATFORM_DOCS
     })
     : [];
 
+const QUICK_ANSWERS = fs.existsSync('/opt/fleet-agent/quick-answers.json')
+    ? JSON.parse(fs.readFileSync('/opt/fleet-agent/quick-answers.json', 'utf-8'))
+    : [];
+
+server.tool(
+    'quick_answers',
+    'Indexed instant answers for common product questions. FASTEST path for how-to one-liners. Index: '
+    + QUICK_ANSWERS.map((e) => e.id).join(', ')
+    + '. Pass a short query or an index id; returns the best matching concise answers.',
+    { query: z.string().describe('Short query or index id, e.g. create-order, add driver') },
+    async ({ query }) => {
+        const q = query.toLowerCase();
+        const scored = QUICK_ANSWERS.map((e) => {
+            let score = e.id === q ? 100 : 0;
+            for (const alias of e.q) {
+                if (q.includes(alias)) score += 10;
+                else { for (const w of alias.split(' ')) { if (w.length > 3 && q.includes(w)) score += 2; } }
+            }
+            return { e, score };
+        }).filter((x) => x.score > 0).sort((a, b) => b.score - a.score).slice(0, 3);
+        if (!scored.length) {
+            return { content: [{ type: 'text', text: 'No quick answer. Index: ' + QUICK_ANSWERS.map((e) => e.id).join(', ') + '. Try product_docs for depth.' }] };
+        }
+        const text = scored.map((x) => '[' + x.e.id + '] ' + x.e.a).join(String.fromCharCode(10, 10));
+        return { content: [{ type: 'text', text }] };
+    }
+);
+
 server.tool(
     'product_docs',
     'Official CBRE Fleet / IFS CommandIQ documentation. Use for ANY how-to or product-usage question; never web-search product questions. '
@@ -145,10 +173,13 @@ server.tool(
             return { content: [{ type: 'text', text }] };
         }
         const q = topic.toLowerCase();
-        let hits = PLATFORM_SECTIONS.filter((s) => s.title.toLowerCase().includes(q));
-        if (!hits.length) {
-            hits = PLATFORM_SECTIONS.filter((s) => s.body.toLowerCase().includes(q));
-        }
+        const scored = PLATFORM_SECTIONS.map((s) => {
+            let score = 0;
+            if (s.title.toLowerCase().includes(q)) score += 10;
+            score += Math.min(5, (s.body.toLowerCase().split(q).length - 1));
+            return { s, score };
+        }).filter((x) => x.score > 0).sort((a, b) => b.score - a.score);
+        let hits = scored.slice(0, 2).map((x) => ({ title: x.s.title, body: x.s.body.slice(0, 7000) }));
         if (!hits.length) {
             return { content: [{ type: 'text', text: 'No platform guide matched "' + topic + '". Topics:\n' + PLATFORM_SECTIONS.map((s) => '- ' + s.title).join('\n') }] };
         }

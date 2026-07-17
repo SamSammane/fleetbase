@@ -35,6 +35,10 @@ const MCP_SERVERS = {
 
 import fs from 'node:fs';
 import { catalogPromptBlock } from './catalog.mjs';
+const CHEATSHEET = (() => {
+    try { return fs.readFileSync('/opt/fleet-agent/howto-cheatsheet.md', 'utf-8'); } catch { return ''; }
+})();
+
 const SCHEMA_CARD = (() => {
     try { return fs.readFileSync('/opt/fleet-agent/schema-card.md', 'utf-8'); } catch { return ''; }
 })();
@@ -42,10 +46,10 @@ const SCHEMA_CARD = (() => {
 const TOOL_POLICY = [
     'Tool policy: PREFER fleet_insights — one call with ALL needed metrics; it runs them in parallel with canonical definitions. Use fleet_sql only for questions the catalog does not cover; use web_search/web_fetch for external facts.',
     'The full database schema is provided below — write SQL directly from it; only call fleet_schema if something seems missing.',
-    'For how-to or product-usage questions about IFS CommandIQ (console screens, features, roles), call product_docs and answer from it - never web_search product questions.',
+    'For how-to questions: answer DIRECTLY from the cheatsheet below (no tool call) when it covers the ask; quick_answers for indexed one-liners; product_docs only for depth. Never web_search product questions.',
     'Never use shell, file editing, or file writing tools.',
     'Prefer one well-formed SQL query over many; aggregate in SQL. Answer immediately after the data returns.',
-].join(' ') + '\n\n' + catalogPromptBlock() + String.fromCharCode(10, 10) + SCHEMA_CARD;
+].join(' ') + '\n\n' + catalogPromptBlock() + String.fromCharCode(10, 10) + CHEATSHEET + String.fromCharCode(10, 10) + SCHEMA_CARD;
 
 function extractText(event, acc) {
     // Defensive extraction across SDKMessage shapes: collect assistant text deltas

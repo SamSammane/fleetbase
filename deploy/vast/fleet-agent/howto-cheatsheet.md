@@ -1,0 +1,22 @@
+Common how-to cheatsheet (answer directly from this; use product_docs only for detail beyond it):
+
+- Create & dispatch order: Fleet-Ops > Operations > Orders > + New Order; pick Order Config; set pickup/dropoff (+customer/schedule); Save (status created); open order > Assign Driver (+vehicle); Dispatch — driver gets a Navigator push.
+- Schedule an order: set the Schedule date/time on creation, or Operations > Scheduler to drag orders onto the calendar; dispatch fires at the scheduled time when auto-dispatch is on.
+- Import orders: Operations > Orders > Import; upload spreadsheet (template downloadable); map columns; review preview; import creates orders in bulk.
+- Track an order: open the order for live map, status timeline, and activity log; customers use the public tracking link from the order's tracking number.
+- Proof of delivery: configured per Order Config (signature/photo/scan); driver captures in Navigator at dropoff; POD artifacts appear on the order record.
+- Kanban board: Operations > Orders > Board view; drag orders between status columns; columns follow the order config's activity flow.
+- Add a driver: Fleet-Ops > Resources > Drivers > + New Driver; personal details + license; optionally assign vehicle and fleet; driver signs into Navigator with their credentials (or send an invite).
+- Add a vehicle: Resources > Vehicles > + New Vehicle; VIN/plate/make/model; assign to fleet; devices attach under the vehicle's Devices tab.
+- Add a place: Resources > Places > + New Place; address geocodes automatically; used as pickup/dropoff/station.
+- Create a fleet: Resources > Fleets > + New Fleet; add vehicles and drivers; used for grouping and dispatch scoping.
+- Add customer/contact: Resources > Contacts > + New Contact (type customer); attach to orders for tracking and invoicing.
+- Report an issue: Resources > Issues > + New Issue (or driver reports from Navigator); set vehicle, category, priority; triage into a work order.
+- Log fuel: Resources > Fuel Reports > + New Report; vehicle, volume, cost, odometer.
+- Create a work order: Maintenance > Work Orders > + New; subject, priority, assign vehicle (VIN-keyed) and assignee; statuses submitted > scheduled > in progress > repaired > approved > closed; ONLY the QC Reviewer role can close (approve/close step).
+- PM schedule: Maintenance > Schedules > + New; pick vehicle, interval method (distance/time/engine-hours) and threshold; platform auto-creates work orders when due.
+- Add a part: Maintenance > Parts > + New; SKU, quantity, unit cost; low stock flags at the reorder point.
+- Invite a user / set roles: IAM > Users > Invite; assign role (Administrator, or custom roles under IAM > Roles with per-permission policies); QC Reviewer role gates work-order closure.
+- Geofence/service area: Operations (Service Areas) > create zone by drawing on the map; zones drive alerts and service boundaries.
+- Change branding: Admin > Branding — upload icon/logo, applies platform-wide immediately.
+- Use the AI assistant: brain icon in the header; docked panel; ask fleet data, how-to, or analytical questions.
