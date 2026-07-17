@@ -27,3 +27,7 @@ echo VENDOR_PATCH_DONE
 # AI search result quality (rich fields, drill-downs, relevance)
 python3 /opt/deploy/patch-ai-search.py
 service php8.2-fpm restart
+
+# Capability activation + isolation hardening
+python3 /opt/deploy/patch-ai-harden.py
+service php8.2-fpm restart

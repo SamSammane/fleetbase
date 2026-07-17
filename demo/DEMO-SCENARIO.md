@@ -26,7 +26,12 @@ Demo admin: `sam@qgi.dev` (password shared separately — do not write it into t
 3. Sign in once and confirm the dashboard loads with the fleet map centered on Dallas.
 4. Keep one tab logged in (your walkthrough tab) and one incognito tab ready
    (to show the invitee login experience if asked).
-5. Fallback if the live console is unreachable: present <https://fleet-demo.qgi.dev>
+5. Run the AI regression check on the instance (60 seconds):
+   `php artisan tinker --execute="require '/opt/deploy/test-ai-caps.php';"` from
+   `/opt/fleetbase/api` — expect `ALL_CHECKS_PASSED`. It verifies every demo AI
+   question activates its capability with real data, and that the dataset floor
+   (fleet, orders, revenue) is intact.
+6. Fallback if the live console is unreachable: present <https://fleet-demo.qgi.dev>
    (static tour with the same story), and reschedule the interactive portion.
 
 ---
