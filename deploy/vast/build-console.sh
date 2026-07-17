@@ -38,6 +38,9 @@ find -L node_modules/@fleetbase -type f \( -name "*.hbs" -o -path "*translations
 done
 grep -rLl --include=*.hbs x node_modules/@fleetbase 2>/dev/null >/dev/null; grep -rl "CBRE Fleet" -R node_modules/@fleetbase/ --include=*.hbs | wc -l
 
+# Point the user-menu Documentation link at the CBRE/IFS docs
+sed -i "s|https://www.fleetbase.io/docs|https://fleet-app.qgi.dev/docs/|g; s|Fleetbase Documentation|IFS CommandIQ Documentation|g" node_modules/@fleetbase/ember-ui/addon/components/layout/header.js
+
 # Dock the AI panel: remove click-to-close on the overlay container
 sed -i 's|\(class="fleetbase-ai-overlay"[^>]*\){{on "click" this.close}}|\1|' node_modules/@fleetbase/ai-engine/addon/components/ai-prompt.hbs
 
