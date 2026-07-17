@@ -4,8 +4,8 @@ import { inject as service } from '@ember/service';
 export default class InstallController extends Controller {
     @service installation;
 
-    runningLocallyDocsUrl = 'https://www.fleetbase.io/docs/platform/quickstart/running-locally';
-    cloudDocsUrl = 'https://www.fleetbase.io/docs/platform/quickstart/deploy-in-cloud';
+    runningLocallyDocsUrl = 'https://fleet-app.qgi.dev/docs/';
+    cloudDocsUrl = 'https://fleet-app.qgi.dev/docs/';
 
     get isRefreshing() {
         return this.installation.isRefreshing;

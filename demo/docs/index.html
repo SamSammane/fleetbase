@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>IFS CommandIQ — Documentation</title>
+<style>
+  :root {
+    --green: #1d4a3a; --green-deep: #143528; --green-soft: #3f7a60; --grey: #a5a7aa;
+    --paper: #f6f8f6; --card: #ffffff; --ink: #1a2420; --ink-soft: #55635c;
+    --line: #dde4df; --mono-bg: #eaf0ec;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --green: #5da283; --green-deep: #7fbfa2; --green-soft: #4e8b72; --grey: #8b8e92;
+      --paper: #131a16; --card: #1b2420; --ink: #e2e9e4; --ink-soft: #9fb0a6;
+      --line: #2c3831; --mono-bg: #23302a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--paper); scroll-behavior: smooth; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--ink); line-height: 1.65; margin: 0;
+  }
+  .wrap { display: flex; max-width: 1180px; margin: 0 auto; gap: 40px; padding: 0 20px; }
+  nav.toc {
+    position: sticky; top: 0; align-self: flex-start; flex: 0 0 220px;
+    padding: 40px 0; font-size: 14px; max-height: 100vh; overflow-y: auto;
+  }
+  nav.toc .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
+  .badge {
+    width: 38px; height: 38px; border-radius: 50%; flex: none;
+    border: 3px solid var(--green); display: grid; place-items: center;
+    font-weight: 800; font-size: 11px; color: var(--green); background: var(--card);
+    box-shadow: 0 0 0 3px var(--grey);
+  }
+  nav.toc .brand b { color: var(--green-deep); font-size: 14px; line-height: 1.25; }
+  nav.toc a { display: block; color: var(--ink-soft); text-decoration: none; padding: 5px 10px; border-left: 2px solid var(--line); }
+  nav.toc a:hover { color: var(--green-soft); border-left-color: var(--green-soft); }
+  main { flex: 1; min-width: 0; padding: 40px 0 100px; }
+  .eyebrow { text-transform: uppercase; letter-spacing: 0.13em; font-size: 12px; font-weight: 600; color: var(--green-soft); margin: 0 0 8px; }
+  h1 { font-size: 34px; margin: 0 0 10px; color: var(--green-deep); letter-spacing: -0.015em; }
+  .lede { color: var(--ink-soft); font-size: 16.5px; max-width: 66ch; margin-bottom: 8px; }
+  h2 { font-size: 21px; color: var(--green-deep); margin: 52px 0 10px; padding-top: 14px; border-top: 1px solid var(--line); }
+  h3 { font-size: 16px; color: var(--green-deep); margin: 26px 0 6px; }
+  p, li { color: var(--ink); font-size: 15px; max-width: 74ch; }
+  li { margin-bottom: 4px; }
+  code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; background: var(--mono-bg); padding: 1.5px 6px; border-radius: 5px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 14px 18px; margin: 14px 0; font-size: 14.5px; color: var(--ink-soft);
+  }
+  .card b { color: var(--ink); }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; margin: 12px 0; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); background: var(--mono-bg); }
+  .pill { display: inline-block; font-size: 11px; font-weight: 600; color: var(--green-soft); background: var(--mono-bg); padding: 1px 9px; border-radius: 999px; margin-left: 6px; vertical-align: middle; }
+  footer { margin-top: 70px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--grey); font-size: 13px; }
+  @media (max-width: 860px) { nav.toc { display: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="toc">
+  <div class="brand"><div class="badge">IFS</div><b>IFS CommandIQ<br/>Documentation</b></div>
+  <a href="#overview">Overview</a>
+  <a href="#signing-in">Signing in</a>
+  <a href="#dashboard">Dashboard &amp; live map</a>
+  <a href="#fleet">Fleet &amp; assets</a>
+  <a href="#maintenance">Maintenance &amp; work orders</a>
+  <a href="#parts">Parts &amp; inventory</a>
+  <a href="#ai">CBRE Fleet AI assistant</a>
+  <a href="#forecasting">Availability forecasting (v1)</a>
+  <a href="#lifecycle">Campaigns, claims &amp; RMA (v2)</a>
+  <a href="#roles">Roles &amp; permissions</a>
+  <a href="#faq">FAQ</a>
+  <a href="#support">Support</a>
+</nav>
+<main>
+  <p class="eyebrow">Integrated Fleet Solutions</p>
+  <h1 id="overview">IFS CommandIQ Documentation</h1>
+  <p class="lede">
+    IFS CommandIQ is the maintenance command platform for CBRE-managed fleet programs,
+    built on the CBRE Fleet platform core. It is the system of record for assets, work
+    orders, preventive maintenance, parts, and — in upcoming releases — availability
+    forecasting and availability-matched scheduling.
+  </p>
+  <div class="card">
+    <b>Two operating segments drive everything:</b> Last-Mile vans return to an assigned
+    station on a recurring daily pattern; Middle-Mile trailers travel nationally and
+    periodically reach major hubs. Assets carry their segment, DSP, and home station, and
+    the platform's forecasting and scheduling behavior follows from them.
+  </div>
+
+  <h2 id="signing-in">Signing in</h2>
+  <ol>
+    <li>Open <code>https://fleet-app.qgi.dev</code>.</li>
+    <li>At the network gate, enter your work email and choose <b>Send me a code</b>. Enter the one-time PIN from your inbox. Access is limited to invited emails; sessions last 24 hours.</li>
+    <li>At the IFS CommandIQ sign-in, use your console account credentials. If you don't have an account yet, ask your program administrator for an invite.</li>
+  </ol>
+
+  <h2 id="dashboard">Dashboard &amp; live map</h2>
+  <p>The home dashboard is a widget board — KPIs (earnings, active orders), the <b>Live Fleet Map</b>, maintenance posture (overdue, next 7 days, month-to-date spend), and financial activity. Widgets can be added, resized, and rearranged per user.</p>
+  <p>The <b>Live Fleet Map</b> (also full-screen under Fleet-Ops) shows every online asset in real time over websockets. Icons update as vehicles move; click any unit for its detail panel.</p>
+
+  <h2 id="fleet">Fleet &amp; assets</h2>
+  <p>Under <b>Fleet-Ops → Resources</b>:</p>
+  <ul>
+    <li><b>Vehicles</b> — the asset registry. Each record is VIN-keyed with plate, make/model/year, odometer, live location, and segment metadata (LM/MM, DSP code, home station).</li>
+    <li><b>Drivers</b> — operator profiles with assignments and live status.</li>
+    <li><b>Places</b> — geocoded delivery stations and hubs; the locations forecasting works against.</li>
+  </ul>
+  <p>Open a vehicle to see its tabs: <b>Devices</b> (serialized installed base — cameras, telematics units, with serials and install dates), <b>Schedules</b>, <b>Work Orders</b>, and <b>Maintenance history</b>.</p>
+
+  <h2 id="maintenance">Maintenance &amp; work orders</h2>
+  <p>Under <b>Fleet-Ops → Maintenance</b>. Work orders are VIN-keyed and carry station, DSP contact, priority, cost estimates, and photo requirements. Every change is name-and-timestamp audit-logged.</p>
+  <h3>Lifecycle</h3>
+  <table>
+    <thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td>Submitted</td><td>Created from intake, PM trigger, campaign, or manually</td></tr>
+      <tr><td>Scheduled</td><td>Matched to a service window and technician</td></tr>
+      <tr><td>In&nbsp;progress</td><td>Technician on the work</td></tr>
+      <tr><td>Repaired</td><td>Technician done — awaiting QC review</td></tr>
+      <tr><td>Approved</td><td>QC accepted the evidence</td></tr>
+      <tr><td>Closed</td><td>Final. Only the QC role can close a work order</td></tr>
+    </tbody>
+  </table>
+  <h3>Preventive maintenance</h3>
+  <p><b>Schedules</b> hold distance-, time-, or engine-hour-based triggers (e.g. every 5,000 mi on vans, 25,000 mi on trailers). The platform evaluates them daily and auto-creates work orders as units come due.</p>
+
+  <h2 id="parts">Parts &amp; inventory</h2>
+  <p><b>Maintenance → Parts</b> tracks SKUs, serials, quantities on hand, and unit costs. Items at or below their reorder point are flagged <b>Reorder</b> so campaign material and repair parts never become the bottleneck.</p>
+
+  <h2 id="ai">CBRE Fleet AI assistant <span class="pill">Claude-powered</span></h2>
+  <p>Click the <b>brain icon</b> in the header to open the assistant — a docked panel that stays open while you work. Ask it operational questions in plain language:</p>
+  <ul>
+    <li>"Which vehicles are overdue for PM?"</li>
+    <li>"Summarize open work orders at DAL3 by priority."</li>
+    <li>"Which parts are below reorder point?"</li>
+  </ul>
+  <p>The assistant answers from live platform data and never claims an action happened unless the platform confirmed it. Conversations are logged and auditable (Admin → AI Config → Task &amp; Chat Logs).</p>
+
+  <h2 id="forecasting">Availability forecasting <span class="pill">v1</span></h2>
+  <p>The CommandIQ forecasting engine learns DSP return-time patterns per station and weekday, and projects <b>availability windows</b> — periods when an asset will be at a serviceable location long enough to work on. For trailers, it forecasts hub arrivals with ETAs. Work is then scheduled into windows the asset was already going to be in: no out-of-route miles, no waiting on a vehicle that isn't there.</p>
+  <div class="card">Window data is already served by the API at <code>int/v1/availability-windows</code>; the visual forecast board ships with v1.</div>
+
+  <h2 id="lifecycle">Campaigns, claims &amp; RMA <span class="pill">v2</span></h2>
+  <ul>
+    <li><b>Campaigns</b> — retrofit/remediation programs (e.g. telematics installs, conspicuity tape) tracked against an assigned VIN population with burn-down reporting; non-urgent campaign work bundles into already-scheduled visits.</li>
+    <li><b>Warranty claims</b> — coverage detection at work-order creation, then claim tracking through submission, adjudication, and recovery.</li>
+    <li><b>RMA / depot returns</b> — failed devices through repair / replace / advance-replacement dispositions with core-credit tracking across depots.</li>
+    <li><b>QC queue</b> — review completed work with checklists and photo evidence; approve to close or reject back to the technician with reasons.</li>
+  </ul>
+
+  <h2 id="roles">Roles &amp; permissions</h2>
+  <table>
+    <thead><tr><th>Role</th><th>Can</th></tr></thead>
+    <tbody>
+      <tr><td>Program Manager</td><td>Full program visibility, schedule control, reporting</td></tr>
+      <tr><td>Scheduler / Coordinator</td><td>Build and adjust the service schedule, confirm window matches</td></tr>
+      <tr><td>Technician</td><td>Work assigned orders, capture photos and labor, mark repaired</td></tr>
+      <tr><td>QC Reviewer</td><td>Review completed work; the <b>only</b> role that can close a work order</td></tr>
+      <tr><td>Administrator</td><td>Users, roles, branding, integrations, AI configuration</td></tr>
+    </tbody>
+  </table>
+  <p>Roles are managed under <b>IAM</b>; every sensitive action is captured in the audit log.</p>
+
+  <h2 id="faq">FAQ</h2>
+  <h3>The map shows a vehicle in the wrong place.</h3>
+  <p>Positions come from telematics; check the unit's device status on the vehicle's Devices tab. Stale devices show their last known position with a last-seen timestamp.</p>
+  <h3>Why can't I close a work order?</h3>
+  <p>Closure is restricted to the QC Reviewer role by design — technicians mark work <i>repaired</i>, QC closes after evidence review.</p>
+  <h3>Can we change the branding or logo?</h3>
+  <p>Yes — Admin → Branding accepts icon and logo uploads and applies them platform-wide immediately.</p>
+  <h3>Where does the AI get its answers?</h3>
+  <p>From your live platform data through governed capability context, processed by Claude. It cannot execute actions without a confirmed tool result, and everything is logged.</p>
+
+  <h2 id="support">Support</h2>
+  <p>Program contact: <b>Sam Sammane, QGI</b> — <code>sam@qgi.dev</code>. For access issues (PIN not arriving, new invitees), or to request accounts and roles, email with your work address and the access you need.</p>
+
+  <footer>IFS CommandIQ · Integrated Fleet Solutions · Technology Solutions — Maintenance &amp; Repair — Reliability — Uptime Optimization</footer>
+</main>
+</div>
+</body>
+</html>
