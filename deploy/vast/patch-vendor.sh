@@ -31,3 +31,7 @@ service php8.2-fpm restart
 # Capability activation + isolation hardening
 python3 /opt/deploy/patch-ai-harden.py
 service php8.2-fpm restart
+
+# Provider timeout for agentic answers (agent loop can exceed 30s cold)
+sed -i "s/Http::timeout(30)/Http::timeout(150)/g; s/Http::timeout(60)/Http::timeout(150)/g" /opt/fleetbase/api/vendor/fleetbase/ai/server/src/Services/OpenAIProvider.php
+service php8.2-fpm restart
