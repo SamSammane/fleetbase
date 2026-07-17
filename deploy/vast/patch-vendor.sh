@@ -23,3 +23,7 @@ sed -i -E "s|https://(www\.)?fleetbase\.io/docs[a-zA-Z0-9/._-]*|https://fleet-ap
 
 service php8.2-fpm restart
 echo VENDOR_PATCH_DONE
+
+# AI search result quality (rich fields, drill-downs, relevance)
+python3 /opt/deploy/patch-ai-search.py
+service php8.2-fpm restart
