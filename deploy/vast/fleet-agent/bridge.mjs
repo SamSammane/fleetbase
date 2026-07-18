@@ -12,6 +12,22 @@
  */
 import http from 'node:http';
 import { Agent } from '@cursor/sdk';
+import socketClusterClient from 'socketcluster-client';
+
+// Live-stream deltas to the console via the platform's SocketCluster layer.
+const STREAM_CHANNEL = process.env.AI_STREAM_CHANNEL || 'fleet-ai-stream';
+let scSocket = null;
+function getSocket() {
+    if (!scSocket) {
+        scSocket = socketClusterClient.create({ hostname: '127.0.0.1', port: 38000, path: '/socketcluster/', secure: false, autoReconnect: true });
+        scSocket.listener('error').once().catch(() => {});
+    }
+    return scSocket;
+}
+function streamPublish(payload) {
+    try { getSocket().transmitPublish(STREAM_CHANNEL, payload); } catch { /* stream is best-effort */ }
+}
+
 
 const PORT = Number(process.env.BRIDGE_PORT || 8055);
 const WORKSPACE = process.env.AGENT_WORKSPACE || '/opt/fleet-agent/workspace';
@@ -104,10 +120,18 @@ async function runAgent(input, maxTokens) {
         const run = await agent.send(TOOL_POLICY + '\n\n' + input);
         const acc = { full: '', delta: '' };
         let usage = {};
+        streamPublish({ kind: 'start' });
         for await (const event of run.stream()) {
+            const before = acc.delta.length;
             extractText(event, acc);
+            if (acc.delta.length > before) {
+                streamPublish({ kind: 'delta', text: acc.delta.slice(before) });
+            } else if (event && event.type === 'thinking' && event.text) {
+                streamPublish({ kind: 'thinking' });
+            }
             if (event?.usage) usage = event.usage;
         }
+        streamPublish({ kind: 'done' });
         const text = acc.full || acc.delta || '';
         return { text, usage };
     } finally {
