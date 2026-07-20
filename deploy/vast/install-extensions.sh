@@ -5,10 +5,8 @@ set -x
 cd /opt/fleetbase/api
 
 composer config repositories.commandiq path /opt/packages/commandiq
-composer config repositories.pallet path /opt/packages/pallet
 
-composer require "ifs/commandiq-api:*" --no-interaction --ignore-platform-req=php 2>&1 | tail -3
-composer require "fleetbase/pallet-api:*" --no-interaction --ignore-platform-req=php 2>&1 | tail -3
+composer require "ifs/commandiq-api:*" --no-interaction --ignore-platform-req=php -W 2>&1 | tail -3
 
 php artisan migrate --force 2>&1 | tail -6
 

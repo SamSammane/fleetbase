@@ -4,15 +4,15 @@ set -x
 
 # ─── SocketCluster app ───────────────────────────────────────────
 if [ ! -d /opt/socketcluster ]; then
-  git clone --depth 1 --branch v17.4.0 https://github.com/SocketCluster/socketcluster.git /opt/socketcluster
+  git clone --depth 1 --branch v17.3.1 https://github.com/SocketCluster/socketcluster.git /opt/socketcluster
 fi
-cd /opt/socketcluster
+cd /opt/socketcluster/app
 npm install --omit=dev 2>&1 | tail -2
 
 cat > /etc/supervisor/conf.d/socketcluster.conf <<'SUP'
 [program:socketcluster]
 command=/usr/bin/node server.js
-directory=/opt/socketcluster
+directory=/opt/socketcluster/app
 environment=SOCKETCLUSTER_PORT="38000",SOCKETCLUSTER_WORKERS="4",SOCKETCLUSTER_BROKERS="4"
 autostart=true
 autorestart=true

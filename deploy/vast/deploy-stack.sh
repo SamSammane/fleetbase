@@ -57,7 +57,7 @@ OSRM_HOST=https://router.project-osrm.org
 ENV
 sed -i "s|__APP_KEY__|${APP_KEY}|; s|__DBPASS__|${DBPASS}|" .env
 
-composer install --no-dev --no-interaction --optimize-autoloader 2>&1 | tail -5
+composer install --no-dev --no-interaction --optimize-autoloader --ignore-platform-req=php 2>&1 | tail -5
 
 php artisan storage:link || true
 mkdir -p storage/app/public/branding
@@ -68,7 +68,7 @@ php artisan config:cache
 php artisan route:cache || php artisan route:clear
 
 # ─── PHP-FPM + nginx ─────────────────────────────────────────────
-service php8.3-fpm start
+service php8.2-fpm start
 
 cat > /etc/nginx/sites-available/fleet-api <<'NGINX'
 server {
@@ -80,7 +80,7 @@ server {
     location / { try_files $uri $uri/ /index.php?$query_string; }
     location ~ \.php$ {
         include snippets/fastcgi-php.conf;
-        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+        fastcgi_pass unix:/run/php/php8.2-fpm.sock;
         fastcgi_read_timeout 300;
     }
 }
@@ -92,6 +92,7 @@ server {
     server_name _;
     root /opt/console/dist;
     index index.html;
+    location /docs/ { alias /opt/docs/; index index.html; }
     location / { try_files $uri $uri/ /index.html; }
 }
 NGINX

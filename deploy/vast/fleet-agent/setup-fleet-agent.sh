@@ -9,7 +9,7 @@ COMPANY_UUID="967490f8-9bbb-4b26-9167-566d1f4dda28"
 SQL_PASS="$(openssl rand -hex 16)"
 
 mkdir -p /opt/fleet-agent/workspace
-cp /opt/deploy/fleet-agent/mcp-server.mjs /opt/deploy/fleet-agent/bridge.mjs /opt/fleet-agent/
+cp /opt/deploy/fleet-agent/mcp-server.mjs /opt/deploy/fleet-agent/bridge.mjs /opt/deploy/fleet-agent/catalog.mjs /opt/deploy/fleet-agent/product-docs.md /opt/deploy/fleet-agent/platform-docs.md /opt/deploy/fleet-agent/howto-cheatsheet.md /opt/deploy/fleet-agent/quick-answers.json /opt/fleet-agent/ 2>/dev/null || true
 
 # ─── Read-only MySQL user with allowlisted SELECT grants ─────────
 TABLES="vehicles drivers work_orders maintenances maintenance_schedules orders payloads places parts devices sensors telematics warranties contacts transactions fuel_reports issues equipment commandiq_availability_windows commandiq_return_patterns commandiq_campaigns commandiq_campaign_assignments commandiq_warranty_claims commandiq_rma_cases commandiq_qc_reviews commandiq_intake_requests invoices invoice_items"
@@ -51,6 +51,7 @@ cat > package.json <<'JSON'
     "@cursor/sdk": "^1.0.23",
     "@modelcontextprotocol/sdk": "^1.12.0",
     "mysql2": "^3.11.0",
+    "socketcluster-client": "^17.0.0",
     "zod": "^3.23.0"
   }
 }

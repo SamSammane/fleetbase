@@ -28,6 +28,7 @@ stdout_logfile=/var/log/cloudflared.log
 redirect_stderr=true
 
 [program:queue-worker]
+user=www-data
 command=/usr/bin/php artisan queue:work --sleep=3 --tries=3
 directory=/opt/fleetbase/api
 autostart=true
@@ -36,6 +37,7 @@ stdout_logfile=/var/log/queue-worker.log
 redirect_stderr=true
 
 [program:scheduler]
+user=www-data
 command=/bin/bash -c "while true; do /usr/bin/php /opt/fleetbase/api/artisan schedule:run --no-interaction; sleep 60; done"
 autostart=true
 autorestart=true
