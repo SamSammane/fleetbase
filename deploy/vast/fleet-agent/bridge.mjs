@@ -134,6 +134,20 @@ setInterval(() => {
     }
 }, 60 * 1000).unref();
 
+// The SDK state in a long-lived process eventually wedges (observed after
+// ~6 idle hours: every run, even from freshly created agents, returns zero
+// events). No cron daemon exists in this container, so the process renews
+// itself: exit cleanly once old enough and idle; supervisor restarts it in
+// about a second. In-flight requests always finish first.
+const MAX_PROCESS_AGE_MS = Number(process.env.BRIDGE_MAX_AGE_MS || 30 * 60 * 1000);
+let activeRequests = 0;
+setInterval(() => {
+    if (process.uptime() * 1000 > MAX_PROCESS_AGE_MS && activeRequests === 0) {
+        console.log('routine self-refresh: exiting for supervisor restart');
+        process.exit(0);
+    }
+}, 60 * 1000).unref();
+
 async function runOnce(agent, input, publish) {
     try {
         const run = await agent.send(TOOL_POLICY + '\n\n' + input);
@@ -188,6 +202,7 @@ const serverHttp = http.createServer(async (req, res) => {
     let body = '';
     req.on('data', (c) => { body += c; if (body.length > 2_000_000) req.destroy(); });
     req.on('end', async () => {
+        activeRequests++;
         try {
             const payload = JSON.parse(body || '{}');
             const input = [payload.instructions, typeof payload.input === 'string' ? payload.input : JSON.stringify(payload.input)]
@@ -214,6 +229,8 @@ const serverHttp = http.createServer(async (req, res) => {
                 console.error('self-heal: exiting for supervisor restart');
                 setTimeout(() => process.exit(1), 200);
             }
+        } finally {
+            activeRequests--;
         }
     });
 });
