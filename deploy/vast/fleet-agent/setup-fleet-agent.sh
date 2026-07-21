@@ -112,4 +112,12 @@ sleep 6
 supervisorctl status fleet-agent
 curl -s http://127.0.0.1:8055/health
 echo
+
+# Hourly watchdog: wedged bridge self-exits on double-empty runs; cron probe
+# triggers that outside user-facing time so supervisor restarts it silently.
+cat > /etc/cron.d/fleet-ai-watchdog <<'CRON'
+17 * * * * root curl -s -m 180 -X POST http://127.0.0.1:8055/responses -H 'Content-Type: application/json' -d '{"input":"health check: reply with the word OK only","quiet":true}' >> /var/log/fleet-ai-watchdog.log 2>&1; echo >> /var/log/fleet-ai-watchdog.log
+CRON
+chmod 644 /etc/cron.d/fleet-ai-watchdog
+
 echo FLEET_AGENT_SETUP_DONE

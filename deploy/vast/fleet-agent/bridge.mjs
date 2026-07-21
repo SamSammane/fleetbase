@@ -125,14 +125,16 @@ async function acquireAgent() {
     return makeAgent();
 }
 
+// Dispose expired agents but do NOT pre-create replacements: constant
+// create/dispose churn degrades the SDK's process state over hours until
+// every run comes back empty. Fresh creation happens at acquire time.
 setInterval(() => {
     while (warmPool.length && Date.now() - warmPool[0].bornAt > POOL_TTL_MS) {
         discardAgent(warmPool.shift().promise);
     }
-    replenishPool();
 }, 60 * 1000).unref();
 
-async function runOnce(agent, input) {
+async function runOnce(agent, input, publish) {
     try {
         const run = await agent.send(TOOL_POLICY + '\n\n' + input);
         const acc = { full: '', delta: '' };
@@ -141,9 +143,9 @@ async function runOnce(agent, input) {
             const before = acc.delta.length;
             extractText(event, acc);
             if (acc.delta.length > before) {
-                streamPublish({ kind: 'delta', text: acc.delta.slice(before) });
+                publish({ kind: 'delta', text: acc.delta.slice(before) });
             } else if (event && event.type === 'thinking' && event.text) {
-                streamPublish({ kind: 'thinking' });
+                publish({ kind: 'thinking' });
             }
             if (event?.usage) usage = event.usage;
         }
@@ -154,15 +156,23 @@ async function runOnce(agent, input) {
     }
 }
 
-async function runAgent(input, maxTokens) {
-    streamPublish({ kind: 'start' });
-    let result = await runOnce(await acquireAgent(), input);
+async function runAgent(input, maxTokens, quiet) {
+    const publish = quiet ? () => {} : streamPublish;
+    publish({ kind: 'start' });
+    let result = await runOnce(await acquireAgent(), input, publish);
     if (!result.text) {
         // Dead-agent signature: instant empty run. Retry once on a fresh agent.
         console.error('empty run, retrying with fresh agent');
-        result = await runOnce(await makeAgent(), input);
+        result = await runOnce(await makeAgent(), input, publish);
     }
-    streamPublish({ kind: 'done' });
+    publish({ kind: 'done' });
+    if (!result.text) {
+        // Even a fresh agent came back empty: the SDK state in this process is
+        // wedged and only a restart clears it. Supervisor brings us back up.
+        const err = new Error('AI engine restarting, please retry in a few seconds');
+        err.selfHeal = true;
+        throw err;
+    }
     return result;
 }
 
@@ -183,7 +193,7 @@ const serverHttp = http.createServer(async (req, res) => {
             const input = [payload.instructions, typeof payload.input === 'string' ? payload.input : JSON.stringify(payload.input)]
                 .filter(Boolean).join('\n\n');
             const started = Date.now();
-            const { text, usage } = await runAgent(input, payload.max_output_tokens);
+            const { text, usage } = await runAgent(input, payload.max_output_tokens, payload.quiet === true);
             console.log(`req ${new Date(started).toISOString()} ${Date.now() - started}ms out=${text.length}ch`);
             const out = {
                 id: 'bridge-' + started,
@@ -200,6 +210,10 @@ const serverHttp = http.createServer(async (req, res) => {
         } catch (e) {
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: { message: String(e && e.message || e) } }));
+            if (e && e.selfHeal) {
+                console.error('self-heal: exiting for supervisor restart');
+                setTimeout(() => process.exit(1), 200);
+            }
         }
     });
 });
