@@ -270,7 +270,8 @@ body[data-theme='dark'] .console-dashboard-title h1 {
     border-left: 1px solid rgba(75, 85, 99, 0.45) !important;
     box-shadow: -10px 0 28px rgba(0, 0, 0, 0.35) !important;
     animation: cq-ai-slide-in 0.16s ease-out;
-    z-index: 60 !important;
+    /* Above the dashboard page header (700) and leaflet controls (600). */
+    z-index: 750 !important;
 }
 
 body[data-theme='light'] .fleetbase-ai-overlay {
