@@ -129,7 +129,17 @@ FROM parts WHERE company_uuid = :company AND deleted_at IS NULL ORDER BY quantit
     invoices_summary: {
         description: 'Ledger invoices: counts and totals by status (paid/pending), amounts in USD.',
         sql: `SELECT status, COUNT(*) AS count, SUM(total_amount) / 100 AS total_usd, SUM(balance) / 100 AS outstanding_usd
-FROM invoices WHERE company_uuid = :company AND deleted_at IS NULL GROUP BY status`,
+FROM ledger_invoices WHERE company_uuid = :company AND deleted_at IS NULL GROUP BY status`,
+    },
+
+    paid_invoices: {
+        description: 'Invoices paid in the trailing {days} days (default 30): number, customer, amount USD, paid date.',
+        params: ['days'],
+        sql: `SELECT i.number, i.total_amount / 100 AS amount_usd, DATE(i.paid_at) AS paid_on, c.name AS customer
+FROM ledger_invoices i LEFT JOIN contacts c ON c.uuid = i.customer_uuid
+WHERE i.company_uuid = :company AND i.status = 'paid' AND i.deleted_at IS NULL
+  AND i.paid_at >= DATE_SUB(NOW(), INTERVAL :days DAY)
+ORDER BY i.paid_at DESC LIMIT 50`,
     },
 
     availability_windows: {

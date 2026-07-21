@@ -207,6 +207,8 @@ echo 'Orders: ' . Order::where('company_uuid', $C)->count()
     . ', active: ' . Order::where('company_uuid', $C)->whereIn('status', ['dispatched', 'driver_enroute'])->count()
     . ', scheduled: ' . Order::where('company_uuid', $C)->where('status', 'created')->count() . ")\n";
 echo 'Transactions: ' . Transaction::where('company_uuid', $C)->count() . ' | sum $' . number_format(Transaction::where('company_uuid', $C)->sum('amount') / 100, 2) . "\n";
-try { echo 'Invoices: ' . \Fleetbase\Ledger\Models\Invoice::where('company_uuid', $C)->count() . "\n"; } catch (\Throwable $e) { echo "Invoices: err\n"; }
+try { DB::statement("UPDATE ledger_invoices SET paid_at = DATE_SUB(NOW(), INTERVAL FLOOR(5 + RAND() * 40) DAY) WHERE status = 'paid' AND paid_at IS NULL");
+DB::statement("UPDATE ledger_invoices SET sent_at = DATE_SUB(paid_at, INTERVAL FLOOR(3 + RAND() * 10) DAY) WHERE status = 'paid' AND sent_at IS NULL");
+echo 'Invoices: ' . \Fleetbase\Ledger\Models\Invoice::where('company_uuid', $C)->count() . "\n"; } catch (\Throwable $e) { echo "Invoices: err\n"; }
 echo 'Customers: ' . Contact::where('company_uuid', $C)->where('type', 'customer')->count() . "\n";
 echo "BUSINESS_SEED_DONE\n";

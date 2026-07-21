@@ -12,7 +12,7 @@ mkdir -p /opt/fleet-agent/workspace
 cp /opt/deploy/fleet-agent/mcp-server.mjs /opt/deploy/fleet-agent/bridge.mjs /opt/deploy/fleet-agent/catalog.mjs /opt/deploy/fleet-agent/product-docs.md /opt/deploy/fleet-agent/platform-docs.md /opt/deploy/fleet-agent/howto-cheatsheet.md /opt/deploy/fleet-agent/quick-answers.json /opt/fleet-agent/ 2>/dev/null || true
 
 # ─── Read-only MySQL user with allowlisted SELECT grants ─────────
-TABLES="vehicles drivers work_orders maintenances maintenance_schedules orders payloads places parts devices sensors telematics warranties contacts transactions fuel_reports issues equipment commandiq_availability_windows commandiq_return_patterns commandiq_campaigns commandiq_campaign_assignments commandiq_warranty_claims commandiq_rma_cases commandiq_qc_reviews commandiq_intake_requests invoices invoice_items"
+TABLES="vehicles drivers work_orders maintenances maintenance_schedules orders payloads places parts devices sensors telematics warranties contacts transactions fuel_reports issues equipment commandiq_availability_windows commandiq_return_patterns commandiq_campaigns commandiq_campaign_assignments commandiq_warranty_claims commandiq_rma_cases commandiq_qc_reviews commandiq_intake_requests ledger_invoices ledger_invoice_items"
 mysql -e "DROP USER IF EXISTS 'ai_ro'@'localhost'; CREATE USER 'ai_ro'@'localhost' IDENTIFIED BY '${SQL_PASS}';"
 for t in $TABLES; do
   mysql -e "GRANT SELECT ON fleetbase.\`$t\` TO 'ai_ro'@'localhost';" 2>/dev/null || true

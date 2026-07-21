@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -e
-TABLES="vehicles drivers work_orders maintenances maintenance_schedules orders payloads places parts devices sensors telematics warranties contacts transactions fuel_reports issues equipment commandiq_availability_windows commandiq_return_patterns commandiq_campaigns commandiq_campaign_assignments commandiq_warranty_claims commandiq_rma_cases commandiq_qc_reviews commandiq_intake_requests invoices invoice_items"
+TABLES="vehicles drivers work_orders maintenances maintenance_schedules orders payloads places parts devices sensors telematics warranties contacts transactions fuel_reports issues equipment commandiq_availability_windows commandiq_return_patterns commandiq_campaigns commandiq_campaign_assignments commandiq_warranty_claims commandiq_rma_cases commandiq_qc_reviews commandiq_intake_requests ledger_invoices ledger_invoice_items"
 OUT=/opt/fleet-agent/schema-card.md
 {
   echo "# Fleet database schema (read-only)"

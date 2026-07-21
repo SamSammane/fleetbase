@@ -37,7 +37,7 @@ const ALLOWED_TABLES = [
     'warranties', 'contacts', 'transactions', 'fuel_reports', 'issues', 'equipment',
     'commandiq_availability_windows', 'commandiq_return_patterns', 'commandiq_campaigns',
     'commandiq_campaign_assignments', 'commandiq_warranty_claims', 'commandiq_rma_cases',
-    'commandiq_qc_reviews', 'commandiq_intake_requests', 'invoices', 'invoice_items',
+    'commandiq_qc_reviews', 'commandiq_intake_requests', 'ledger_invoices', 'ledger_invoice_items',
 ];
 
 const SCHEMA_CARD = fs.existsSync('/opt/fleet-agent/schema-card.md')

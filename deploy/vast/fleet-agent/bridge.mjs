@@ -85,6 +85,10 @@ function extractText(event, acc) {
 }
 
 const POOL_SIZE = Number(process.env.AGENT_POOL_SIZE || 2);
+// Idle local agents die silently after sitting: send() succeeds but the run
+// stream ends with zero events. TTL + periodic refresh keep the pool young;
+// an empty result still triggers one retry on a brand-new agent.
+const POOL_TTL_MS = Number(process.env.AGENT_POOL_TTL_MS || 8 * 60 * 1000);
 const warmPool = [];
 
 function makeAgent() {
@@ -98,29 +102,41 @@ function makeAgent() {
 
 function replenishPool() {
     while (warmPool.length < POOL_SIZE) {
-        const slot = makeAgent()
-            .then((a) => { const i = warmPool.indexOf(slot); if (i >= 0) warmPool[i] = a; return a; })
-            .catch((e) => { const i = warmPool.indexOf(slot); if (i >= 0) warmPool.splice(i, 1); console.error('prewarm failed:', e.message); });
+        const slot = { bornAt: Date.now(), promise: null };
+        slot.promise = makeAgent()
+            .catch((e) => { const i = warmPool.indexOf(slot); if (i >= 0) warmPool.splice(i, 1); console.error('prewarm failed:', e.message); return null; });
         warmPool.push(slot);
     }
 }
 
+function discardAgent(agentOrPromise) {
+    Promise.resolve(agentOrPromise).then((a) => a?.dispose?.()).catch(() => {});
+}
+
 async function acquireAgent() {
-    const candidate = warmPool.shift();
-    replenishPool();
-    if (candidate) {
-        try { return await candidate; } catch { /* fall through */ }
+    while (warmPool.length) {
+        const slot = warmPool.shift();
+        if (Date.now() - slot.bornAt > POOL_TTL_MS) { discardAgent(slot.promise); continue; }
+        replenishPool();
+        const agent = await slot.promise;
+        if (agent) return agent;
     }
+    replenishPool();
     return makeAgent();
 }
 
-async function runAgent(input, maxTokens) {
-    const agent = await acquireAgent();
+setInterval(() => {
+    while (warmPool.length && Date.now() - warmPool[0].bornAt > POOL_TTL_MS) {
+        discardAgent(warmPool.shift().promise);
+    }
+    replenishPool();
+}, 60 * 1000).unref();
+
+async function runOnce(agent, input) {
     try {
         const run = await agent.send(TOOL_POLICY + '\n\n' + input);
         const acc = { full: '', delta: '' };
         let usage = {};
-        streamPublish({ kind: 'start' });
         for await (const event of run.stream()) {
             const before = acc.delta.length;
             extractText(event, acc);
@@ -131,12 +147,23 @@ async function runAgent(input, maxTokens) {
             }
             if (event?.usage) usage = event.usage;
         }
-        streamPublish({ kind: 'done' });
         const text = acc.full || acc.delta || '';
         return { text, usage };
     } finally {
         try { await agent.dispose?.(); } catch { /* best effort */ }
     }
+}
+
+async function runAgent(input, maxTokens) {
+    streamPublish({ kind: 'start' });
+    let result = await runOnce(await acquireAgent(), input);
+    if (!result.text) {
+        // Dead-agent signature: instant empty run. Retry once on a fresh agent.
+        console.error('empty run, retrying with fresh agent');
+        result = await runOnce(await makeAgent(), input);
+    }
+    streamPublish({ kind: 'done' });
+    return result;
 }
 
 const serverHttp = http.createServer(async (req, res) => {
@@ -157,6 +184,7 @@ const serverHttp = http.createServer(async (req, res) => {
                 .filter(Boolean).join('\n\n');
             const started = Date.now();
             const { text, usage } = await runAgent(input, payload.max_output_tokens);
+            console.log(`req ${new Date(started).toISOString()} ${Date.now() - started}ms out=${text.length}ch`);
             const out = {
                 id: 'bridge-' + started,
                 object: 'response',

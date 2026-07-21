@@ -70,6 +70,7 @@ $checks = [
     'active orders >= 3'  => \Fleetbase\FleetOps\Models\Order::where('company_uuid', $C)->whereIn('status', ['dispatched', 'driver_enroute'])->count() >= 3,
     'txn revenue > 0'     => \Fleetbase\Models\Transaction::where('company_uuid', $C)->sum('amount') > 0,
     'ai enabled'          => (bool) (\Fleetbase\Models\Setting::system('ai')['enabled'] ?? false),
+    'paid invoices dated' => \Illuminate\Support\Facades\DB::table('ledger_invoices')->where('company_uuid', $C)->where('status', 'paid')->whereNotNull('paid_at')->count() >= 4,
 ];
 foreach ($checks as $label => $ok) {
     echo($ok ? 'PASS ' : 'FAIL ') . $label . PHP_EOL;
