@@ -13,7 +13,7 @@ phase commandiq;      mkdir -p /opt/packages && tar -xzf commandiq.tgz -C /tmp/ 
 phase extensions;     OPENROUTER_KEY="$OPENROUTER_KEY" bash install-extensions.sh
 phase seeds
 cd /opt/fleetbase/api
-for s in fix-morphs seed-mega seed-finish fix-windows seed-drivers seed-business fix-orders fix-morphs; do
+for s in fix-morphs seed-mega seed-finish fix-windows seed-drivers seed-business fix-orders seed-extensions fix-morphs; do
   php artisan tinker --execute="require '/opt/deploy/${s}.php';" 2>&1 | tail -3
 done
 cd /opt/deploy
